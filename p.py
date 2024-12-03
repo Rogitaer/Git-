@@ -1,49 +1,46 @@
-from PyQt5 import uic
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtGui import QPainter, QColor, QPolygon
-import sys
 import random
-from UI import Ui_MainWindow
+import sys
 
-SCREEN_SIZE = [680, 480]
+from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton
 
 
-class Example(QMainWindow, Ui_MainWindow):
+class Example(QWidget):
     def __init__(self):
         super().__init__()
-        self.setupUi(self)
-        self.flag = False
-        self.setWindowTitle('Супрематизм')
-        self.pushButton.clicked.connect(self.draw)
-        self.coords = []
+        self.initUI()
 
-    def draw(self):
-        self.figure = 'circle'
-        self.size = random.randint(10, 100)
-        self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))  # 'yellow'
-        self.flag = True
-        self.update()
+    def initUI(self):
+        self.setGeometry(300, 300, 200, 200)
+        self.setWindowTitle('123')
+        self.btn = QPushButton('Draw', self)
+        self.btn.move(70, 150)
+        self.btn.resize(60, 40)
+        self.do_paint = False
+        self.btn.clicked.connect(self.paint)
 
     def paintEvent(self, event):
-        if self.flag:
+        if self.do_paint:
             qp = QPainter()
             qp.begin(self)
-            qp.setPen(QColor(*self.color))
-            qp.setBrush(QColor(*self.color))
-            self.x, self.y = random.randint(100, SCREEN_SIZE[0] - 100), random.randint(100, SCREEN_SIZE[1] - 100)
-            if self.figure == 'circle':
-                qp.drawEllipse(self.x, self.y, self.size, self.size)
+            self.draw_flag(qp)
             qp.end()
 
+    def paint(self):
+        self.do_paint = True
+        self.repaint()
 
-def except_hook(cls, exception, traceback):
-    sys.__excepthook__(cls, exception, traceback)
+    def draw_flag(self, qp):
+        a = random.randint(10, 100)
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        qp.setBrush(QColor(r, g, b))
+        qp.drawEllipse(random.randint(0, 200), random.randint(0, 200), a, a)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    sys.excepthook = except_hook
     ex = Example()
     ex.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
