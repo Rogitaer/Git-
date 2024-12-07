@@ -1,23 +1,30 @@
 import random
 import sys
-
 from PyQt5.QtGui import QPainter, QColor
-from PyQt5.QtWidgets import QWidget, QApplication, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QWidget, QApplication, QPushButton, QVBoxLayout
 
 
-class Example(QWidget):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.initUI()
+        self.setGeometry(0, 0, 800, 600)
+        self.setWindowTitle('MainWindow')
 
-    def initUI(self):
-        self.setGeometry(300, 300, 200, 200)
-        self.setWindowTitle('123')
-        self.btn = QPushButton('Draw', self)
-        self.btn.move(70, 150)
-        self.btn.resize(60, 40)
+        # Создаем центральный виджет и устанавливаем его
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+
+        # Создаем вертикальный layout
+        self.layout = QVBoxLayout()
+        self.central_widget.setLayout(self.layout)
+
+        # Создаем кнопку
+        self.pushButton = QPushButton('Draw', self)
+        self.pushButton.clicked.connect(self.paint)
+        self.layout.addWidget(self.pushButton)
+
+        # Флаг для рисования
         self.do_paint = False
-        self.btn.clicked.connect(self.paint)
 
     def paintEvent(self, event):
         if self.do_paint:
@@ -31,16 +38,18 @@ class Example(QWidget):
         self.repaint()
 
     def draw_flag(self, qp):
-        a = random.randint(10, 100)
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
+        a = random.randint(10, 100)  # Размер круга
+        r = random.randint(0, 255)  # Красный цвет
+        g = random.randint(0, 255)  # Зеленый цвет
+        b = random.randint(0, 255)  # Синий цвет
         qp.setBrush(QColor(r, g, b))
-        qp.drawEllipse(random.randint(0, 200), random.randint(0, 200), a, a)
+
+        # Рисуем круг в случайной позиции
+        qp.drawEllipse(random.randint(0, self.width()), random.randint(0, self.height()), a, a)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = Example()
-    ex.show()
-    sys.exit(app.exec())
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())
